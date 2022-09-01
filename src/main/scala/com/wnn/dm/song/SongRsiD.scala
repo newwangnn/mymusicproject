@@ -10,13 +10,14 @@ object SongRsiD {
   def main(args: Array[String]): Unit = {
     val session: SparkSession = SparkSession.builder()
       .appName("per song rank ")
-      .master("local")
-      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+//      .master("local")
+//      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+      .config("spark.sql.shuffle.partitions",50)
       .enableHiveSupport()
       .getOrCreate()
 
-//    var currentDate=GenerateDate.dateToString()
-    var currentDate=20220822
+    var currentDate=GenerateDate.dateToString()
+    println(s"处理歌曲日志日期：${GenerateDate.dateToString()}")
 
 
     session.sql("use mymusic")
@@ -41,21 +42,21 @@ object SongRsiD {
 
     val d1: DataFrame = session.sql(
       """
- select "1"as period,songid,songname,singer1,singe2,RSI_1 as RSI,
+ select "1"as period,songid,songname,singer1,singer2,RSI_1 as RSI,
  row_number() over(partition by dt_data order by RSI_1) as RSI_RANK
  from temp_song_rsi_d
       """.stripMargin)
 
     val d7: DataFrame = session.sql(
       """
- select "7"as period,songid,songname,singer1,singe2,RSI_7 as RSI,
+ select "7"as period,songid,songname,singer1,singer2,RSI_7 as RSI,
  row_number() over(partition by dt_data order by RSI_7) as RSI_RANK
  from temp_song_rsi_d
       """.stripMargin)
 
     val d30: DataFrame = session.sql(
       """
- select "30"as period,songid,songname,singer1,singe2,RSI_30 as RSI,
+ select "30"as period,songid,songname,singer1,singer2,RSI_30 as RSI,
  row_number() over(partition by dt_data order by RSI_30) as RSI_RANK
  from temp_song_rsi_d
       """.stripMargin)
@@ -81,7 +82,7 @@ object SongRsiD {
 
     session.sql(
       s"""
-        | insert overwrite table TM_SONG_RSI_D partition(dt_data=${currentDate}) select period,songid,songname,singer1,singe2,RSI,RSI_RANK from temp_tm_song_rsi
+        | insert overwrite table TM_SONG_RSI_D partition(dt_data=${currentDate}) select period,songid,songname,singer1,singer2,RSI,RSI_RANK from temp_tm_song_rsi
       """.stripMargin)
 
     val prop = new Properties()

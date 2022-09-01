@@ -111,9 +111,10 @@ object SongBaseInfo {
 
   def main(args: Array[String]): Unit = {
     val session: SparkSession = SparkSession.builder()
-      .master("local")
       .appName(" extract data ")
-      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+//      .master("local")
+//      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+      .config("spark.sql.shuffle.partitions",50)
       .enableHiveSupport()
       .getOrCreate()
     session.sparkContext.setLogLevel("error")
@@ -187,7 +188,7 @@ object SongBaseInfo {
         |duration                int    ,
         |singer1             string ,
         |singerid1             string ,
-        |singe2             string ,
+        |singer2             string ,
         |singerid2             string ,
         |post_time               string ,
         |pinyin_first            string ,

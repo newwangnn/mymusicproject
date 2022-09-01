@@ -16,9 +16,10 @@ object ClientPlaySong {
 
     val session: SparkSession = SparkSession.builder()
       .appName("cluster runtime")
-      .master("local")
-      .config("hive.metastore.uris","thrift://hadoop52:9083")
-      .config("spark.sql.warehouse.dir","/mymusic/hive")
+//      .master("local")
+//      .config("hive.metastore.uris","thrift://hadoop52:9083")
+//      .config("spark.sql.warehouse.dir","/mymusic/hive")
+      .config("spark.sql.shuffle.partitions",50)
       .enableHiveSupport()
       .getOrCreate()
     val src: RDD[String] = session.sparkContext.textFile("hdfs://mycluster/musictestdata/currentday_clientlog.tar.gz")
@@ -82,6 +83,7 @@ object ClientPlaySong {
         |
       """.stripMargin)
 
+    println(s"处理歌曲日志日期：${GenerateDate.dateToString()}")
     session.sql(
       s"""
         |  load data inpath "hdfs://mycluster/mymusic/datasource/MINIK_CLIENT_SONG_PLAY_OPERATE_REQ" into table TO_CLIENT_SONG_PLAY_OPERATE_REQ_D PARTITION (dt_data=${GenerateDate.dateToString()})

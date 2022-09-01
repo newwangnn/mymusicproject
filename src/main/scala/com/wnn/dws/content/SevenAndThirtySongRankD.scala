@@ -7,13 +7,15 @@ object SevenAndThirtySongRankD {
 
   def main(args: Array[String]): Unit = {
     val session: SparkSession = SparkSession.builder()
-      .master("local")
       .appName("per7and30Analyse")
-      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+//      .master("local")
+//      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+      .config("spark.sql.shuffle.partitions",50)
       .enableHiveSupport()
       .getOrCreate()
 
     var currentDay=GenerateDate.dateToString()
+    println(s"处理歌曲日志日期：${GenerateDate.dateToString()}")
 //    var currentDay="20220822"
     var sevenDay=GenerateDate.dateToString(currentDay,7)
     var thirtyDay=GenerateDate.dateToString(currentDay,30)
@@ -82,7 +84,7 @@ object SevenAndThirtySongRankD {
     session.sql(
       """
         | select
-        | distinct zero.songid,songname,source,album,product,language,video_format,duration,singer1,singerid1,singe2,singerid2,
+        | distinct zero.songid,songname,source,album,product,language,video_format,duration,singer1,singerid1,singer2,singerid2,
         | perSongNBM,perSongSuppNBM,perUserSongNBM,perOrderSongNBM,
         | perSevenSongNBM,perSevenSongSuppNBM,perSevenUserSongNBM,perSevenOrderSongNBM,
         | perThirtySongNBM,perThirtySongSuppNBM,perThirtyUserSongNBM,perThirtyOrderSongNBM,

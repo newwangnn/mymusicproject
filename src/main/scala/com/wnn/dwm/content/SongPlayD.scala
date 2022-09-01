@@ -7,14 +7,17 @@ object SongPlayD {
 
   def main(args: Array[String]): Unit = {
     val session: SparkSession = SparkSession.builder()
-      .master("local")
       .appName(" per Song play ")
-      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+//      .master("local")
+//      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+      .config("spark.sql.shuffle.partitions",50)
       .enableHiveSupport()
       .getOrCreate()
 
     import org.apache.spark.sql.functions._
-    var date=GenerateDate.dateToString()
+    var date=args(0)
+    println(s"处理歌曲日志日期：${GenerateDate.dateToString()}")
+//    var date=GenerateDate.dateToString()
 //    var date="20220822"
 
     session.sql("use mymusic")
@@ -101,7 +104,7 @@ object SongPlayD {
         |  select
         |     songid,mid,optrate_type,uid,consume_type,play_time,dur_time,session_id,songname,pkg_id,order_id,
         |  source,album,product,language,
-        |  video_format,duration,singer1,singerid1,singe2,singerid2,post_time,pinyin_first,
+        |  video_format,duration,singer1,singerid1,singer2,singerid2,post_time,pinyin_first,
         |  pinyin,singing_type,original_singer,lyricist,composer,bpm,star_level,
         |  video_quality,video_make,video_feature,lyric_feature,image_quality,subtitles_type,
         |  audio_format,original_sound_quality,original_track,original_track_vol,accompany_version,

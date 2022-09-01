@@ -2,6 +2,7 @@ package com.wnn.dm.song
 
 import java.util.Properties
 
+import com.wnn.common.GenerateDate
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 object SingerRsiD {
@@ -9,14 +10,15 @@ object SingerRsiD {
   def main(args: Array[String]): Unit = {
     val session: SparkSession = SparkSession.builder()
       .appName("per singer rank ")
-      .master("local")
-      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+//      .master("local")
+//      .config("hive.metastore.uris", "thrift://hadoop52:9083")
+      .config("spark.sql.shuffle.partitions",50)
       .enableHiveSupport()
       .getOrCreate()
 
-//    var currentDate=GenerateDate.dateToString()
-    var currentDate=20220822
-
+    var currentDate=GenerateDate.dateToString()
+//    var currentDate=20220822
+    println(s"处理歌曲日志日期：${GenerateDate.dateToString()}")
 
     session.sql("use mymusic")
 
