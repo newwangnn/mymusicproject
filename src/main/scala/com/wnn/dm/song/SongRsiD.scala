@@ -9,7 +9,7 @@ object SongRsiD {
 
   def main(args: Array[String]): Unit = {
     val session: SparkSession = SparkSession.builder()
-      .appName("per song rank ")
+//      .appName("per song rank ")
 //      .master("local")
 //      .config("hive.metastore.uris", "thrift://hadoop52:9083")
       .config("spark.sql.shuffle.partitions",50)
@@ -18,6 +18,7 @@ object SongRsiD {
 
     var currentDate=GenerateDate.dateToString()
     println(s"处理歌曲日志日期：${GenerateDate.dateToString()}")
+//    var currentDate="20220901"
 
 
     session.sql("use mymusic")
@@ -88,18 +89,17 @@ object SongRsiD {
     val prop = new Properties()
     prop.setProperty("user","root")
     prop.setProperty("password","root")
-    prop.setProperty("url","jdbc:mysql://hadoop52:3306/mymusic")
+    prop.setProperty("url","jdbc:mysql://hadoop52:3306/mymusicresult")
     prop.setProperty("driver","com.mysql.jdbc.Driver")
 
-    session.sql(
-      """
-        | select * from temp_tm_song_rsi
-      """.stripMargin)
+
+    session.table("temp_tm_song_rsi")
+        .withColumn("dt_data",lit(currentDate))
       .write
       .mode(SaveMode.Append)
       .option("useUnicode","true")
       .option("characterEncoding","utf-8")
-      .jdbc("jdbc:mysql://hadoop52:3306/mymusic","tm_song_rsi_d",prop)
+      .jdbc("jdbc:mysql://hadoop52:3306/mymusicresult","tm_song_rsi_d",prop)
 
   }
 
